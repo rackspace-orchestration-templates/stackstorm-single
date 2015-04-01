@@ -6,7 +6,7 @@ test-cases:
     ssh_private_key: { get_output: private_key } # Fetch from output-list of stack
     ssh_key_file: tmp/private_key # File to write with ssh_private_key
     tests:
-    - ansible_server:
+    - stackstorm-single:
         fabric:
           # Fabric environment settings to use while running envassert script
           # http://docs.fabfile.org/en/latest/usage/env.html
@@ -21,4 +21,4 @@ test-cases:
             connection_attempts: 3
             disable_known_hosts: True
             use_ssh_config: True
-            fabfile: test/fabric/ansible.py # Path to envassert test
+            fabfile: test/fabric/stackstorm.py # Path to envassert test
