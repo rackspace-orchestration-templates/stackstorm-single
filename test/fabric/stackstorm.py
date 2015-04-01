@@ -19,7 +19,9 @@ def check():
                 'mysql-server'
                 ]
 
-    services = ['st2api',
+    services = ['actionrunner',
+                'st2api',
+                'sensor_container',
                 'rules_engine',
                 'mistral',
                 'st2resultstracker',
@@ -33,8 +35,6 @@ def check():
             "package {0} is not installed".format(pkg)
 
     for srv in services:
-        assert process.is_up(srv),\
-            "process {0} is not running".format(srv)
         assert service.is_enabled(srv),\
             "service {0} is not enabled".format(srv)
 
