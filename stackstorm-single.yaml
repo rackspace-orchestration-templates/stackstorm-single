@@ -103,7 +103,7 @@ resources:
                 content: |
                   #!/bin/bash -v
                   set -e
-                  curl -L https://ops.stackstorm.net/releases/st2/scripts/st2_deploy.sh | sh -s -- stable
+                  curl -L https://ops.stackstorm.net/releases/st2/scripts/st2_deploy.sh | bash -s stable
                   ufw allow 22
                   st2ctl status
                   st2 --version
