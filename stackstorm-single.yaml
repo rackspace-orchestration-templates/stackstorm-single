@@ -103,10 +103,15 @@ resources:
                 content: |
                   #!/bin/bash -v
                   set -e
+                  # Run installer
                   curl -L https://ops.stackstorm.net/releases/st2/scripts/st2_deploy.sh | bash -s stable
+                  # Enable firewall
                   ufw allow 22
+                  ufw --force enable
+                  # Check StackStorm status
                   st2ctl status
                   st2 --version
+                  # Notify success
                   wc_notify --data-binary '{"status": "SUCCESS"}'
             runcmd:
               - /tmp/heat/stackstorm.sh

@@ -1,6 +1,5 @@
 from fabric.api import env, task
-from envassert import detect, file, group, package, port, process, service, \
-    user
+from envassert import detect, package, process, service, user
 from hot.utils.test import get_artifacts
 
 
@@ -8,24 +7,40 @@ from hot.utils.test import get_artifacts
 def check():
     env.platform_family = detect.detect()
 
-    assert package.installed("ansible-tower"),\
-        "package ansible-tower is not installed"
-    assert file.exists("/etc/tower/settings.py"),\
-        "/etc/tower/settings.py does not exist"
-    assert port.is_listening(80), "port 80 is not listening"
-    assert port.is_listening(443), "port 443 is not listening"
-    assert user.exists("awx"), "user awx does not exist"
-    assert group.is_exists("awx"), "group aws does not exist"
-    assert process.is_up("apache2"), "process apache2 is not running"
-    assert process.is_up("postgres"), "process postgres is not running"
-    assert process.is_up("redis-server"), "process redis-server is not running"
-    assert process.is_up("supervisor"), "process supervisor is not running"
-    assert service.is_enabled("apache2"), "service apache2 is not enabled"
-    assert service.is_enabled("postgres"), "service postgres is not enable"
-    assert service.is_enabled("redis-server"),\
-        "service redis-server is not enabled"
-    assert service.is_enabled("supervisor"),\
-        "service supervisor is not enabled"
+    packages = ['st2common',
+                'st2reactor',
+                'st2actions',
+                'st2api',
+                'st2auth',
+                'st2debug',
+                'python-st2client',
+                'rabbitmq-server',
+                'mongodb-server',
+                'mysql-server'
+                ]
+
+    services = ['actionrunner',
+                'st2api',
+                'sensor_container',
+                'rules_engine',
+                'mistral',
+                'st2resultstracker',
+                'rabbitmq-server',
+                'mongodb',
+                'mysql'
+                ]
+
+    for pkg in packages:
+        assert package.installed(pkg),\
+            "package {0} is not installed".format(pkg)
+
+    for srv in services:
+        assert process.is_up(srv),\
+            "process {0} is not running".format(srv)
+        assert service.is_enabled(srv),\
+            "service {0} is not enabled".format(srv)
+
+    assert user.exists("stanley"), "user stanley does not exist"
 
 
 @task
