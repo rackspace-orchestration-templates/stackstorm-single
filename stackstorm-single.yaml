@@ -1,7 +1,7 @@
 heat_template_version: 2014-10-16
 
 description: |
-  A template that deploys Ansible Tower onto a single Linux server.
+  A template that deploys StackStorm onto a single Linux server.
 
 parameter_groups:
 
@@ -16,7 +16,6 @@ parameter_groups:
   # different setups. If any of these parameters are changed, there is a good
   # chance this stack will fail to properly deploy.
   parameters:
-  - ansible_tower_tarball
   - server_name
 
 parameters:
@@ -59,14 +58,7 @@ parameters:
     label: Server Hostname
     description: The instance name
     type: string
-    default: ansible-tower
-
-  ansible_tower_tarball:
-    label: Ansible Tarball
-    description: Location of the Ansible Tower installer
-    type: string
-    default: |
-      http://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest.tar.gz
+    default: StackStorm
 
 resources:
 
@@ -85,32 +77,7 @@ resources:
       name: { get_param: "OS::stack_id" }
       save_private_key: true
 
-  # Random password generation
-  ansible_admin_pass:
-    type: "OS::Heat::RandomString"
-    properties:
-      length: 16
-      sequence: lettersdigits
-
-  postgres_admin_pass:
-    type: "OS::Heat::RandomString"
-    properties:
-      length: 16
-      sequence: lettersdigits
-
-  redis_admin_pass:
-    type: "OS::Heat::RandomString"
-    properties:
-      length: 16
-      sequence: lettersdigits
-
-  munin_admin_pass:
-    type: "OS::Heat::RandomString"
-    properties:
-      length: 16
-      sequence: lettersdigits
-
-  ansible_tower:
+  stackstorm:
     type: "OS::Nova::Server"
     properties:
       key_name: { get_resource: ssh_key }
@@ -127,60 +94,23 @@ resources:
             #cloud-config
             package_update: true
             packages:
-              - python-dev
-              - python-yaml
-              - python-paramiko
-              - python-jinja2
-              - python-pip
+              - curl
+              - vim
             write_files:
-            # Write out options file
-              - path: /root/tower_setup_conf.yml
-                permissions: '0644'
-                content: |
-                  admin_password: %ansible_admin_pass%
-                  database: internal
-                  munin_password: %munin_admin_pass%
-                  pg_password: %postgres_admin_pass%
-                  primary_machine: localhost
-                  redis_password: %redis_admin_pass%
-            # Write out the inventory file
-              - path: /root/inventory
-                permissions: '0644'
-                content: |
-                  [primary]
-                  localhost
-
-                  [all:children]
-                  primary
             # Install Script
-              - path: /root/tower_install.sh
+              - path: /tmp/heat/stackstorm.sh
                 permissions: '0544'
                 content: |
                   #!/bin/bash -v
                   set -e
-                  pip install ansible
-                  # Pull and extract the installer
-                  cd /root
-                  wget -ct0 %ansible_tower_tarball%
-                  tar xzf ansible-tower-setup-latest.tar.gz
-                  # Get the extracted folder name
-                  ANSIBLE_SETUP_FOLDER=`tar tf ansible-tower-setup-latest.tar.gz | awk -F/ '{ print $1 }' | uniq`
-                  # Copy everything to working directory and install
-                  cp inventory $ANSIBLE_SETUP_FOLDER/inventory
-                  cp tower_setup_conf.yml $ANSIBLE_SETUP_FOLDER/tower_setup_conf.yml
-                  cd $ANSIBLE_SETUP_FOLDER
-                  ./setup.sh
-                  ufw allow 443
+                  curl -L https://ops.stackstorm.net/releases/st2/scripts/st2_deploy.sh | sh -s -- stable
+                  ufw allow 22
+                  st2ctl status
+                  st2 --version
                   wc_notify --data-binary '{"status": "SUCCESS"}'
             runcmd:
-              - /root/tower_install.sh
+              - /tmp/heat/stackstorm.sh
           params:
-            "%ansible_tower_tarball%": { get_param: ansible_tower_tarball }
-            "%ansible_admin_pass%": { get_attr: [ansible_admin_pass, value] }
-            "%postgres_admin_pass%": { get_attr: [postgres_admin_pass, value] }
-            "%redis_admin_pass%": { get_attr: [redis_admin_pass, value] }
-            "%munin_admin_pass%": { get_attr: [munin_admin_pass, value] }
-            "%server_name%": { get_param: server_name }
             wc_notify: { get_attr: ['wait_condition_handle', 'curl_cli'] }
 
 outputs:
@@ -188,25 +118,9 @@ outputs:
     description: SSH Private Key
     value: { get_attr: [ssh_key, private_key] }
 
-  ansible_url:
-    value:
-      str_replace:
-        template: "https://%server_ip%"
-        params:
-          "%server_ip%": { get_attr: [ ansible_tower, accessIPv4 ] }
-    description: Tower URL
-
   server_ip:
     value: { get_attr: [ ansible_tower, accessIPv4 ] }
     description: Server IP
-
-  ansible_username:
-    value: admin
-    description: Admin Username
-
-  ansible_password:
-    value: { get_attr: [ansible_admin_pass, value] }
-    description: Admin Password
 
   server_data:
     value: { get_attr: [ wait_condition, data ] }
