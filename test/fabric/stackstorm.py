@@ -20,7 +20,6 @@ def check():
                 ]
 
     services = ['st2api',
-                'sensor_container',
                 'rules_engine',
                 'mistral',
                 'st2resultstracker',
