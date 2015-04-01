@@ -119,7 +119,7 @@ outputs:
     value: { get_attr: [ssh_key, private_key] }
 
   server_ip:
-    value: { get_attr: [ ansible_tower, accessIPv4 ] }
+    value: { get_attr: [ stackstorm, accessIPv4 ] }
     description: Server IP
 
   server_data:
