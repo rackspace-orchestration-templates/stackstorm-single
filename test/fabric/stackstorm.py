@@ -19,8 +19,7 @@ def check():
                 'mysql-server'
                 ]
 
-    services = ['actionrunner',
-                'st2api',
+    services = ['st2api',
                 'sensor_container',
                 'rules_engine',
                 'mistral',
