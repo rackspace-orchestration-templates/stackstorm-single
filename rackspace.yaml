@@ -11,9 +11,8 @@ reach-info:
 hidden_outputs:
   - private_key
 abstract: |
-  Single Linux server running [StackStorm](http://stackstorm.com/).
-
-  This deployment is intended for development and test cases.
+  StackStorm is a platform for integration and automation across services and
+  tools by configuring actions in response to events.
 instructions: |
   #### Overview
   Review the [StackStorm Overview](http://docs.stackstorm.com/overview.html)
