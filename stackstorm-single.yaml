@@ -126,7 +126,3 @@ outputs:
   server_ip:
     value: { get_attr: [ stackstorm, accessIPv4 ] }
     description: Server IP
-
-  server_data:
-    value: { get_attr: [ wait_condition, data ] }
-    description: Data from wait condition to report script status
