@@ -16,7 +16,7 @@ def check():
                 'python-st2client',
                 'rabbitmq-server',
                 'mongodb-server',
-                'mysql-server'
+                'postgresql'
                 ]
 
     services = ['actionrunner',
@@ -27,7 +27,7 @@ def check():
                 'st2resultstracker',
                 'rabbitmq-server',
                 'mongodb',
-                'mysql'
+                'postgres'
                 ]
 
     for pkg in packages:
