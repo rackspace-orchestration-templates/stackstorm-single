@@ -1,7 +1,9 @@
 heat_template_version: 2014-10-16
 
 description: |
-  A template that deploys StackStorm onto a single Linux server.
+  Single Linux server running the latest version of
+  [StackStorm](http://stackstorm.com/). This deployment is intended for
+  development and test cases.
 
 parameter_groups:
 
