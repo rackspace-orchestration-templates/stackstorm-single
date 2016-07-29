@@ -106,7 +106,7 @@ resources:
                   #!/bin/bash -v
                   set -e
                   # Run installer
-                  curl -L https://ops.stackstorm.net/releases/st2/scripts/st2_deploy.sh | bash
+                  curl -sSL https://stackstorm.com/packages/install.sh | sudo bash
                   # Enable firewall
                   ufw allow 22
                   ufw --force enable
