@@ -7,27 +7,22 @@ from hot.utils.test import get_artifacts
 def check():
     env.platform_family = detect.detect()
 
-    packages = ['st2common',
-                'st2reactor',
-                'st2actions',
-                'st2api',
-                'st2auth',
-                'st2debug',
-                'python-st2client',
+    packages = ['st2',
+                'st2chatops',
+                'st2mistral',
+                'st2web',
                 'rabbitmq-server',
-                'mongodb-server',
+                'mongodb-org-server',
                 'postgresql'
                 ]
 
-    services = ['actionrunner',
-                'st2api',
-                'sensor_container',
-                'rules_engine',
+    services = ['st2api',
+                'st2sensorcontainer',
                 'mistral',
                 'st2resultstracker',
                 'rabbitmq-server',
-                'mongodb',
-                'postgres'
+                'mongod',
+                'postgresql'
                 ]
 
     for pkg in packages:

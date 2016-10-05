@@ -106,10 +106,12 @@ resources:
                   #!/bin/bash -v
                   set -e
                   # Run installer
+                  wget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc | sudo apt-key add -
                   curl -sSL https://stackstorm.com/packages/install.sh | sudo bash
                   # Enable firewall
                   ufw allow 22
                   ufw --force enable
+                  st2ctl start
                   # Check StackStorm status
                   st2ctl status
                   st2 --version
